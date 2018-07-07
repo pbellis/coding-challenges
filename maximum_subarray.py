@@ -44,14 +44,27 @@ def maximum_subarray_rec(deltas, lo, hi):
 		cross = find_max_crossing_subarray(deltas, lo, mid, hi)
 		return max((left, right, cross), key=lambda x: x[2])
 		
+def linear_maximum_subarray(arr):
+	bi, bj, bdelta = 0, 0, 0
+	mi = 0
+	for j in range(1, len(arr)):
+		if arr[j] < arr[mi]:
+			mi = j
+		else:
+			delta = arr[j] - arr[mi]
+			if delta > bdelta:
+				bi, bj, bdelta = mi, j, delta
+	return bi, bj, bdelta
+		
+		
 if __name__ == "__main__":		
 	print("running tests...")
 	from random import randint
-	for _ in range(10):
+	for _ in range(1000):
 		arr = [randint(0, 99999) for _ in range(randint(100, 1000))]
-		expected = naive_maximum_subarray(arr)
-		actual = dnc_maximum_subarray(arr)
-		if expected != actual:
+		expected = dnc_maximum_subarray(arr)
+		actual = linear_maximum_subarray(arr)
+		if expected[2] != actual[2]:
 			print("expected: ", expected)
 			print("actual: ", actual)
 			
@@ -59,3 +72,4 @@ if __name__ == "__main__":
 	arr = [randint(0, 99999) for _ in range(1000)]
 	print('naive: ', Timer(lambda: naive_maximum_subarray(arr)).timeit(100))
 	print('d&c: ', Timer(lambda: dnc_maximum_subarray(arr)).timeit(100))
+	print('linear: ', Timer(lambda: linear_maximum_subarray(arr)).timeit(100))
